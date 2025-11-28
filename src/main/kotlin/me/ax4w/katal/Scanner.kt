@@ -20,6 +20,7 @@ class Scanner(var input: String) {
             .replace("&&", "and")
             .replace("||", "or")
             .replace("!", "not")
+            .replace("%","mod")
     }
 
     private fun fetchNumber(): String {

@@ -1,0 +1,9 @@
+$ exp : [dup 0 eq]
+            [drop drop 1]
+            [
+                [dup 1 eq]
+                [drop 1 mul]
+                [swap dup mul swap 1 sub exp]
+                cond
+            ]
+            cond $

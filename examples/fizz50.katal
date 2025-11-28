@@ -1,0 +1,16 @@
+$ fizz :    [dup 3 mod 0 eq]
+            [
+                [5 mod 0 eq]
+                ["FizzBuzz" println]
+                ["Fizz" println]
+                cond
+            ]
+            [
+                [dup 5 mod 0 eq]
+                [drop "Buzz" println]
+                [println]
+                cond
+            ]
+            cond $
+
+50 [fizz] repeatN

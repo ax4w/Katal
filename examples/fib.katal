@@ -1,0 +1,4 @@
+$ fib : [dup 2 le]
+        [nop]
+        [[dup 1 sub fib] [2 sub fib] add]
+        cond $

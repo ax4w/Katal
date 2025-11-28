@@ -1,7 +1,6 @@
 package me.ax4w.katal.lib
 
 import me.ax4w.katal.Runtime
-import me.ax4w.katal.Token
 import me.ax4w.katal.Value
 
 object Logic {

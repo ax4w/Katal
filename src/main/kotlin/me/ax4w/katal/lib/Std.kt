@@ -1,12 +1,10 @@
 package me.ax4w.katal.lib
 
 import me.ax4w.katal.Runtime
-import me.ax4w.katal.Token
 import me.ax4w.katal.Value
 import me.ax4w.katal.exceptions.IllegalStatementException
 import java.io.File
 import java.io.InputStream
-import java.util.EmptyStackException
 
 object Std {
 

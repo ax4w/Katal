@@ -43,6 +43,7 @@ class Runtime() {
     }
 
     private fun callFunction(value: String) {
+
         val fn = functions[value]
         if (fn == null) {
             val rtFn = runtimeFunctions[value]

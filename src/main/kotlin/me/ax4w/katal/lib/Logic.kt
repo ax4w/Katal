@@ -7,13 +7,13 @@ object Logic {
 
     fun and (r: Runtime) {
         val arguments = r.fetchNParams(2, true,Value.Bool::class)
-        val result = arguments[0].asBoolean()  && arguments[1].asBoolean()
+        val result = arguments[1].asBoolean()  && arguments[0].asBoolean()
         r.stack.push(Value.Bool(result))
     }
 
     fun or (r: Runtime) {
         val arguments = r.fetchNParams(2,true, Value.Bool::class)
-        val result = arguments[0].asBoolean()|| arguments[1].asBoolean()
+        val result = arguments[1].asBoolean()|| arguments[0].asBoolean()
         r.stack.push(Value.Bool(result))
     }
 
@@ -25,7 +25,7 @@ object Logic {
 
     fun cond(r : Runtime) {
         val arguments = r.fetchNParams(3)
-        val condRaw = arguments[2]
+        val condRaw = arguments[0]
         var condResult: Boolean
         when (condRaw) {
             is Value.Compound -> {
@@ -45,15 +45,15 @@ object Logic {
         if (condResult) {
             r.evaluate(arguments[1].asCompound())
         }else{
-            r.evaluate(arguments[0].asCompound())
+            r.evaluate(arguments[2].asCompound())
         }
 
     }
 
     fun eq(r: Runtime) {
         val argument = r.fetchNParams(2,true)
-        val valA = argument[1]
-        val valB = argument[0]
+        val valA = argument[0]
+        val valB = argument[1]
 
         if (valA::class != valB::class) throw IllegalArgumentException("Arguments must have the same type for eq")
 
@@ -62,8 +62,8 @@ object Logic {
 
     fun le(r: Runtime) {
         val argument = r.fetchNParams(2,true, Value.Num::class)
-        val valA = argument[1]
-        val valB = argument[0]
+        val valA = argument[0]
+        val valB = argument[1]
 
         if (valA::class != Value.Num::class || valB::class != Value.Num::class)
             throw IllegalArgumentException("Arguments must have the same type for eq")
@@ -72,8 +72,8 @@ object Logic {
 
     fun ge(r: Runtime) {
         val argument = r.fetchNParams(2,true, Value.Num::class)
-        val valA = argument[1]
-        val valB = argument[0]
+        val valA = argument[0]
+        val valB = argument[1]
 
         if (valA::class != Value.Num::class || valB::class != Value.Num::class)
             throw IllegalArgumentException("Arguments must have the same type for eq")

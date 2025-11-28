@@ -23,8 +23,8 @@ object Std {
 
     fun swap(r: Runtime) {
         val arguments = r.fetchNParams(2,false)
-        r.stack.push(arguments[0])
         r.stack.push(arguments[1])
+        r.stack.push(arguments[0])
     }
 
     fun drop(r: Runtime) {
@@ -55,8 +55,8 @@ object Std {
 
     fun repeatN(r : Runtime) {
         val arguments = r.fetchNParams(2,false, Value.Num::class, Value.Compound::class)
-        val range = arguments[1]
-        val fn = arguments[0]
+        val range = arguments[0]
+        val fn = arguments[1]
         var rangeNum : Int
 
         if (fn !is Value.Compound)

@@ -100,7 +100,7 @@ class Runtime() {
             val v = stack.pop()
             params.add(v)
         }
-        return params.map { v ->
+        return params.reversed().map { v ->
             var value = v
             if (v is Value.Compound && evalCompound) {
                 evaluate(v.value)

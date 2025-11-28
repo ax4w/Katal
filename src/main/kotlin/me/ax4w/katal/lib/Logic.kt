@@ -2,77 +2,82 @@ package me.ax4w.katal.lib
 
 import me.ax4w.katal.Runtime
 import me.ax4w.katal.Token
+import me.ax4w.katal.Value
 
 object Logic {
 
     fun and (r: Runtime) {
-        val arguments = r.fetchNParams(2, true,Token.BOOLEAN)
-        val result = (arguments[0].first.toBoolean() && arguments[1].first.toBoolean()).toString()
-        r.stack.push(Pair(result, Token.BOOLEAN))
+        val arguments = r.fetchNParams(2, true,Value.Bool::class)
+        val result = arguments[0].asBoolean()  && arguments[1].asBoolean()
+        r.stack.push(Value.Bool(result))
     }
 
     fun or (r: Runtime) {
-        val arguments = r.fetchNParams(2,true, Token.BOOLEAN)
-        val result = (arguments[0].first.toBoolean() || arguments[1].first.toBoolean()).toString()
-        r.stack.push(Pair(result, Token.BOOLEAN))
+        val arguments = r.fetchNParams(2,true, Value.Bool::class)
+        val result = arguments[0].asBoolean()|| arguments[1].asBoolean()
+        r.stack.push(Value.Bool(result))
     }
 
     fun not (r: Runtime) {
-        val arguments = r.fetchNParams(1,true, Token.BOOLEAN)
-        val result = (!arguments[0].first.toBoolean()).toString()
-        r.stack.push(Pair(result, Token.BOOLEAN))
+        val arguments = r.fetchNParams(1,true, Value.Bool::class)
+        val result = !arguments[0].asBoolean()
+        r.stack.push(Value.Bool(result))
     }
 
     fun cond(r : Runtime) {
-        //if we would evalCompound = true when both true and false sections would eval when compound
         val arguments = r.fetchNParams(3)
-        //process condition
-        var (cond,tokCond) = arguments[2]
-        when (tokCond) {
-            Token.COMPOUND -> {
-                r.evaluate(cond)
-                val result = r.fetchNParams(1,false, Token.BOOLEAN)[0]
-                cond = result.first
-                tokCond = result.second
+        val condRaw = arguments[2]
+        var condResult: Boolean
+        when (condRaw) {
+            is Value.Compound -> {
+                r.evaluate(condRaw.asCompound())
+                val result = r.fetchNParams(1, false, Value.Bool::class)[0]
+                condResult = result.asBoolean()
             }
-            Token.BOOLEAN -> {}
+            is Value.Bool -> {
+                condResult = condRaw.asBoolean()
+            }
             else -> throw IllegalArgumentException("Condition needs to evaluate to a boolean")
         }
-        //println("DEBUG: Cond result $cond")
-        if (cond.toBoolean()) {
-            r.evaluate(arguments[1].first)
+
+        if (arguments[1] !is Value.Compound || arguments[2] !is Value.Compound)
+            throw IllegalArgumentException("Branches need to be compounds")
+
+        if (condResult) {
+            r.evaluate(arguments[1].asCompound())
         }else{
-            //println("DEBUG: eval else case: ${arguments[0].first}")
-            r.evaluate(arguments[0].first)
+            r.evaluate(arguments[0].asCompound())
         }
+
     }
 
     fun eq(r: Runtime) {
         val argument = r.fetchNParams(2,true)
-        val (valueA, tokA) = argument[1]
-        val (valueB, tokB) = argument[0]
-        if (tokA != tokB) throw IllegalArgumentException("Arguments must have the same type for eq")
-        when(tokA) {
-            Token.NUMBER -> {
-                r.stack.push(Pair((valueA.toFloat() == valueB.toFloat()).toString(), Token.BOOLEAN))
-            }
-            else -> r.stack.push(Pair((valueA == valueB).toString(), Token.BOOLEAN))
-        }
+        val valA = argument[1]
+        val valB = argument[0]
+
+        if (valA::class != valB::class) throw IllegalArgumentException("Arguments must have the same type for eq")
+
+        r.stack.push(Value.Bool(valA == valB))
     }
 
     fun le(r: Runtime) {
-        val argument = r.fetchNParams(2,true, Token.NUMBER)
-        val (valueA, tokA) = argument[1]
-        val (valueB, tokB) = argument[0]
-        if (tokA != tokB) throw IllegalArgumentException("Arguments must have the same type for eq")
-        r.stack.push(Pair((valueA.toFloat() < valueB.toFloat()).toString(), Token.BOOLEAN))
+        val argument = r.fetchNParams(2,true, Value.Num::class)
+        val valA = argument[1]
+        val valB = argument[0]
+
+        if (valA::class != Value.Num::class || valB::class != Value.Num::class)
+            throw IllegalArgumentException("Arguments must have the same type for eq")
+        r.stack.push(Value.Bool(valA.asNum() < valB.asNum()))
     }
 
     fun ge(r: Runtime) {
-        val argument = r.fetchNParams(2,true, Token.NUMBER)
-        val (valueA, tokA) = argument[0]
-        val (valueB, tokB) = argument[1]
-        if (tokA != tokB) throw IllegalArgumentException("Arguments must have the same type for eq")
-        r.stack.push(Pair((valueA.toFloat() > valueB.toFloat()).toString(), Token.BOOLEAN))
+        val argument = r.fetchNParams(2,true, Value.Num::class)
+        val valA = argument[1]
+        val valB = argument[0]
+
+        if (valA::class != Value.Num::class || valB::class != Value.Num::class)
+            throw IllegalArgumentException("Arguments must have the same type for eq")
+        r.stack.push(Value.Bool(valA.asNum() > valB.asNum()))
     }
 }

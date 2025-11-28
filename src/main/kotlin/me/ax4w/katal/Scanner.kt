@@ -13,14 +13,6 @@ class Scanner(var input: String) {
         input = input.replace("\n", "")
             .replace("\r", "")
             .replace("\n\r", "")
-            .replace("*", "mul")
-            .replace("+", "add")
-            .replace("-", "sub")
-            .replace("/", "div")
-            .replace("&&", "and")
-            .replace("||", "or")
-            .replace("!", "not")
-            .replace("%","mod")
     }
 
     private fun fetchNumber(): String {

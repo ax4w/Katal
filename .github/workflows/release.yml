@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     permissions:
-      contents: write  # Wichtig für Release-Erstellung
+      contents: write
     
     steps:
       - name: Checkout code

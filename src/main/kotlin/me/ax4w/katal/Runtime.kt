@@ -17,7 +17,6 @@ class Runtime() {
         loadLibrariesFromPackage("me.ax4w.katal.lib")
     }
 
-
     fun loadLibrariesFromPackage(p: String) {
         val scan = ClassGraph().enableClassInfo().acceptPackages(p).scan()
         scan.allClasses.forEach { classInfo ->
@@ -43,7 +42,6 @@ class Runtime() {
     }
 
     private fun callFunction(value: String) {
-
         val fn = functions[value]
         if (fn == null) {
             val rtFn = runtimeFunctions[value]
@@ -75,7 +73,6 @@ class Runtime() {
                 when (tok) {
                     Token.FUNCTION -> callFunction(value)
                     Token.DECLARATION -> storeDeclaration(value)
-
                     else -> {
                         when (tok) {
                             Token.NUMBER -> stack.push(Value.Num(value.toDouble()))
@@ -109,17 +106,6 @@ class Runtime() {
             if (types.isNotEmpty() && !types.any { clazz -> clazz.isInstance(value) })
                 throw IllegalArgumentException("Invalid parameter $v, required ${types.joinToString { it.toString() }}")
             value
-            /*var v = value
-            var t = tok
-            if (evalCompound && t == Token.COMPOUND) {
-                evaluate(v)
-                val (nVal, nTok ) = fetchNParams(1, false, *tokens)[0]
-                v = nVal
-                t = nTok
-            }
-            if (tokens.isNotEmpty() && !tokens.contains(t))
-                throw IllegalArgumentException("Invalid parameter $tok, required ${tokens.joinToString { it.toString() }}")*/
-            //Pair(v,t)
         }
     }
 }

@@ -2,12 +2,13 @@ package me.ax4w.katal
 
 import io.github.classgraph.ClassGraph
 import java.util.Stack
+import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.valueParameters
 
 class Runtime() {
 
-    val stack = Stack<Pair<String, Token>>()
+    val stack = Stack<Value>()
 
     private val functions = mutableMapOf<String, (Runtime) -> Unit>()
     private val runtimeFunctions = mutableMapOf<String, String>()
@@ -15,7 +16,6 @@ class Runtime() {
     init {
         loadLibrariesFromPackage("me.ax4w.katal.lib")
     }
-
 
     fun loadLibrariesFromPackage(p: String) {
         val scan = ClassGraph().enableClassInfo().acceptPackages(p).scan()
@@ -73,9 +73,14 @@ class Runtime() {
                 when (tok) {
                     Token.FUNCTION -> callFunction(value)
                     Token.DECLARATION -> storeDeclaration(value)
-
                     else -> {
-                        stack.push(Pair(value, tok))
+                        when (tok) {
+                            Token.NUMBER -> stack.push(Value.Num(value.toDouble()))
+                            Token.STRING -> stack.push(Value.Str(value))
+                            Token.BOOLEAN -> stack.push(Value.Bool(value.toBoolean()))
+                            Token.COMPOUND -> stack.push(Value.Compound(value))
+                            else -> {/*unreachable*/}
+                        }
                     }
                 }
             }
@@ -85,25 +90,22 @@ class Runtime() {
         }
     }
 
-    fun fetchNParams(amount: Int, evalCompound : Boolean = false, vararg tokens: Token) : List<Pair<String,Token>> {
-        val params = mutableListOf<Pair<String,Token>>()
+    fun fetchNParams(amount: Int, evalCompound : Boolean = false, vararg types: KClass<out Value>) : List<Value> {
+        val params = mutableListOf<Value>()
         for (i in 1..amount) {
             if (stack.isEmpty()) throw IllegalStateException("Not enough arguments")
-            val (value, tok) = stack.pop()
-            params.add(Pair(value,tok))
+            val v = stack.pop()
+            params.add(v)
         }
-        return params.map { (value,tok) ->
-            var v = value
-            var t = tok
-            if (evalCompound && t == Token.COMPOUND) {
-                evaluate(v)
-                val (nVal, nTok ) = fetchNParams(1, false, *tokens)[0]
-                v = nVal
-                t = nTok
+        return params.reversed().map { v ->
+            var value = v
+            if (v is Value.Compound && evalCompound) {
+                evaluate(v.value)
+                value = fetchNParams(1, false, *types)[0]
             }
-            if (tokens.isNotEmpty() && !tokens.contains(t))
-                throw IllegalArgumentException("Invalid parameter $tok, required ${tokens.joinToString { it.toString() }}")
-            Pair(v,t)
+            if (types.isNotEmpty() && !types.any { clazz -> clazz.isInstance(value) })
+                throw IllegalArgumentException("Invalid parameter $v, required ${types.joinToString { it.toString() }}")
+            value
         }
     }
 }

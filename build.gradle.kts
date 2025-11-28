@@ -3,7 +3,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-group = "org.example"
+group = "me.ax4w.katal"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -14,6 +14,7 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation("io.github.classgraph:classgraph:4.8.184")
     implementation(kotlin("reflect"))
+    implementation("com.github.ajalt.clikt:clikt:5.0.1")
 }
 
 

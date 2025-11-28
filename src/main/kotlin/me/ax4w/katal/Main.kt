@@ -1,6 +1,27 @@
 package me.ax4w.katal
 
-fun main() {
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.main
+import com.github.ajalt.clikt.parameters.options.option
+import java.io.File
+import java.io.InputStream
+
+
+class Katal : CliktCommand() {
+    val file: String? by option(help="path to a file to just run")
+    override fun run() {
+        if (file != null) {
+            val rt = Runtime()
+            val inputStream: InputStream = File(file).inputStream()
+            val inputString = inputStream.bufferedReader().use { it.readText() }
+            rt.evaluate(inputString)
+        }else{
+            repl()
+        }
+    }
+}
+
+fun repl() {
     val rt = Runtime()
     val inputBuffer = StringBuilder()
 
@@ -42,3 +63,6 @@ fun main() {
         }
     }
 }
+
+
+fun main(args: Array<String>) = Katal().main(args)

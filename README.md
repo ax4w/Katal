@@ -27,4 +27,11 @@ For examples look into `examples`, everything is covered from basic stuff to rec
 - `cond`: Basically `if`, the top most element on the stack is the condition, the top-1 element is the true branch, the top-2 element is the false branch
 
 #### math
-- `add`(+) / `sub` (-) / `div` (/) / `mul` (*) / `mod` (%) - Your basic math function
+- `add` / `sub` / `div` / `mul` / `mod` - Your basic math function
+- `saveDiv` - Div but when dividing by 0 returns Nothing, else result wrapped in something
+#### Optional
+- `something`: Wrap a value in Something
+- `nothing`: Just create a Nothing
+- `unwrap` : Unbox the value from withing Something, errors if called on Nothing
+- `unwrapOr`: Same as unwrap but with default value for Nothing
+- 

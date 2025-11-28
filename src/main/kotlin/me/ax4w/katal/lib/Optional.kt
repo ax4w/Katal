@@ -5,7 +5,7 @@ import me.ax4w.katal.Value
 
 object Optional {
 
-    fun some(r: Runtime) {
+    fun something(r: Runtime) {
         val arguments = r.fetchNParams(1, true)
         r.stack.push(Value.Something(arguments[0]))
     }

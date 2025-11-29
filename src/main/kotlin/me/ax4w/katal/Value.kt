@@ -16,6 +16,8 @@ sealed class Value {
 
     object Nothing : Value()
 
+    data class Array(val value : MutableList<Value>) : Value()
+
     fun asBoolean(): Boolean {
         return (this as? Bool)?.value ?: throw IllegalStateException("Value is not a Boolean: $this")
     }
@@ -40,6 +42,10 @@ sealed class Value {
         return (this as? Something)?.value ?: throw IllegalStateException("Value is not a Something: $this")
     }
 
+    fun asArray(): MutableList<Value> {
+        return (this as? Array)?.value ?: throw IllegalStateException("Value is not a Array: $this")
+    }
+
     fun toDisplay(): String = when (this) {
         is Num -> value.toString()
         is Str -> "\"$value\""
@@ -48,6 +54,7 @@ sealed class Value {
         is Function -> value
         is Something -> "Something($value)"
         is Nothing -> "Nothing"
+        is Array -> value.joinToString(", ")
     }
 
 }

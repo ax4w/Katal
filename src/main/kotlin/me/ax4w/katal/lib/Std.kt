@@ -21,6 +21,42 @@ object Std {
         r.stack.clear()
     }
 
+    fun isNum(r : Runtime) {
+        val arguments = r.fetchNParams(1,false)
+        r.stack.push(Value.Bool(arguments[0] is Value.Num))
+    }
+
+    fun isStr(r : Runtime) {
+        val arguments = r.fetchNParams(1,false)
+        r.stack.push(Value.Bool(arguments[0] is Value.Str))
+    }
+
+    fun isBool(r : Runtime) {
+        val arguments = r.fetchNParams(1,false)
+        r.stack.push(Value.Bool(arguments[0] is Value.Bool))
+    }
+
+    fun isArray(r : Runtime) {
+        val arguments = r.fetchNParams(1,false)
+        r.stack.push(Value.Bool(arguments[0] is Value.Array))
+    }
+
+    fun isSomething(r : Runtime) {
+        val arguments = r.fetchNParams(1,false)
+        r.stack.push(Value.Bool(arguments[0] is Value.Something))
+    }
+
+    fun isNothing(r : Runtime) {
+        val arguments = r.fetchNParams(1,false)
+        r.stack.push(Value.Bool(arguments[0] is Value.Nothing))
+    }
+
+    fun isCompound(r : Runtime) {
+        val arguments = r.fetchNParams(1,false)
+        r.stack.push(Value.Bool(arguments[0] is Value.Compound))
+    }
+
+
     fun swap(r: Runtime) {
         val arguments = r.fetchNParams(2,false)
         r.stack.push(arguments[1])
@@ -104,8 +140,6 @@ object Std {
         val array = arguments[0].asArray()
         if (index >= array.size)
             throw IllegalArgumentException("index $index out of bounds for array length ${array.size}")
-        //put array back
-        r.stack.push(arguments[0])
         //put element at index on top
         r.stack.push(array[index])
     }

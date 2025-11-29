@@ -1,0 +1,16 @@
+$ fizz :    [dup 3 mod 0 eq]
+            [
+                [5 mod 0 eq]
+                ["FizzBuzz"]
+                ["Fizz"]
+                cond
+            ]
+            [
+                [dup 5 mod 0 eq]
+                [drop "Buzz"]
+                [nop]
+                cond
+            ]
+            cond $
+
+50 [fizz] repeatN 50 arrayOf println

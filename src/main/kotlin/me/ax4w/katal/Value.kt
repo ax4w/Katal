@@ -54,7 +54,7 @@ sealed class Value {
         is Function -> value
         is Something -> "Something($value)"
         is Nothing -> "Nothing"
-        is Array -> value.joinToString(", ")
+        is Array -> "(${value.joinToString(", ")})"
     }
 
 }

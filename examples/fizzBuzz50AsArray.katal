@@ -13,4 +13,7 @@ $ fizz :    [dup 3 mod 0 eq]
             ]
             cond $
 
-50 [fizz] repeatN 50 arrayOf println
+
+
+$ fizzAsArray : 50 [] repeatN arrayOf [fizz] map $
+

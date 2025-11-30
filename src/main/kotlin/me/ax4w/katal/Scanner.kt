@@ -27,29 +27,7 @@ class Scanner(var input: String) {
         return str
     }
 
-
     private fun isCompoundOpen() = input[pos] == '['
-
-    private fun isArray() = input[pos] == '('
-
-    private fun fetchArray(): String {
-        val sb = StringBuilder()
-        val openStack = Stack<Boolean>()
-        do {
-            when (input[pos]) {
-                '(' -> {
-                    openStack.push(true)
-                }
-
-                ')' -> {
-                    openStack.pop()
-                }
-            }
-            sb.append(input[pos])
-            pos++
-        } while (openStack.isNotEmpty())
-        return sb.toString()
-    }
 
     private fun fetchCompound(): String {
         val sb = StringBuilder()
@@ -114,7 +92,15 @@ class Scanner(var input: String) {
         val name = sb.toString().trim()
         sb = StringBuilder()
         sb.append("${name}$")
-        //skip name body delimiter
+        if (input[pos] != ':') throw IllegalStatementException("Needs delimiter : after name")
+        //skip name parameter count delimiter
+        pos++
+        skipSpaces()
+        if (!isNum()) throw IllegalStatementException("Function declaration needs parameter count")
+        sb.append("${fetchNumber()}$")
+        skipSpaces()
+        //skip parameter count body delimiter
+        if (input[pos] != ':') throw IllegalStatementException("Needs delimiter : parameter count")
         pos++
         //now function body
         skipSpaces()
@@ -160,6 +146,7 @@ class Scanner(var input: String) {
                 }
             }
             skipSpaces()
+
         }
 
     }

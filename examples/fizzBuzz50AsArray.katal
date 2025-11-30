@@ -1,4 +1,4 @@
-$ fizz :    [dup 3 mod 0 eq]
+$ fizz : 1 :[dup 3 mod 0 eq]
             [
                 [5 mod 0 eq]
                 ["FizzBuzz"]
@@ -15,5 +15,5 @@ $ fizz :    [dup 3 mod 0 eq]
 
 
 
-$ fizzAsArray : 50 [] repeatN arrayOf [fizz] map $
+$ fizzAsArray : 1 : [] repeatN arrayOf [fizz] map $
 

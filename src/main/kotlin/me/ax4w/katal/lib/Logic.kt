@@ -74,7 +74,6 @@ object Logic {
         val argument = r.fetchNParams(2,true, Value.Num::class)
         val valA = argument[0]
         val valB = argument[1]
-
         if (valA::class != Value.Num::class || valB::class != Value.Num::class)
             throw IllegalArgumentException("Arguments must have the same type for eq")
         r.stack.push(Value.Bool(valA.asNum() > valB.asNum()))

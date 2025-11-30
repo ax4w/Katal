@@ -1,6 +1,7 @@
 package me.ax4w.katal
 
 import io.github.classgraph.ClassGraph
+import me.ax4w.katal.exceptions.IllegalStatementException
 import java.util.Stack
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberFunctions
@@ -11,7 +12,7 @@ class Runtime() {
     val stack = Stack<Value>()
 
     private val functions = mutableMapOf<String, (Runtime) -> Unit>()
-    private val runtimeFunctions = mutableMapOf<String, String>()
+    private val runtimeFunctions = mutableMapOf<String, Pair<Int,String>>()
 
     init {
         loadLibrariesFromPackage("me.ax4w.katal.lib")
@@ -48,7 +49,8 @@ class Runtime() {
             if (rtFn == null) {
                 println("No function found for $value")
             }else{
-                executeRuntimeFunction(rtFn)
+                if (stack.size < rtFn.first) throw IllegalStatementException("Function $value needs ${rtFn.first} parameters on stack")
+                executeRuntimeFunction(rtFn.second)
             }
         } else {
             fn.invoke(this)
@@ -61,7 +63,7 @@ class Runtime() {
 
     private fun storeDeclaration(value: String) {
         val parts = value.split("$")
-        runtimeFunctions[parts[0]] = parts[1]
+        runtimeFunctions[parts[0]] = Pair(parts[1].toInt(), parts[2])
     }
 
     fun evaluate(input: String) {

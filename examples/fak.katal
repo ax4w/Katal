@@ -1,4 +1,4 @@
- $ fak :    [dup 2 le]
-            [1 mul]
-            [dup [1 sub fak] mul]
-            cond $
+ $ fak : 1:     [dup 2 le]
+                [1 mul]
+                [dup [1 sub fak] mul]
+                cond $

@@ -52,4 +52,9 @@ object Math {
         val valueB = arguments[1]
         r.stack.push(Value.Num(valueA.asNum() % valueB.asNum()))
     }
+
+    fun abs(r: Runtime) {
+        val arguments = r.fetchNParams(1, true, Value.Num::class)
+        r.stack.push(Value.Num(kotlin.math.abs(arguments[0].asNum())))
+    }
 }

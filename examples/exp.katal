@@ -1,4 +1,4 @@
-$ exp : [dup 0 eq]
+$ exp : 1 : [dup 0 eq]
             [drop drop 1]
             [
                 [dup 1 eq]

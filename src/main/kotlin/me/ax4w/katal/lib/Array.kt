@@ -2,15 +2,18 @@ package me.ax4w.katal.lib
 
 import me.ax4w.katal.Runtime
 import me.ax4w.katal.Value
+import kotlin.reflect.KClass
 
 object Array {
 
     fun arrayOf(r : Runtime) {
         //top of the stack needs to be the size
         val arguments = r.fetchNParams(1,false, Value.Num::class)
-        //arrays don't need to be homogenous, but fixed size
         val elements = r.fetchNParams(arguments[0].asNum().toInt(),false)
-        r.stack.push(Value.Array(elements.toMutableList()))
+        //check that every type is eq to the first one
+        val ref = elements[0]
+        if (!elements.all { it::class == ref::class }) throw IllegalArgumentException("Elements of an array need to be the same type")
+        r.stack.push(Value.Array(elements.toMutableList(), ref::class))
     }
 
     fun get(r : Runtime) {
@@ -37,8 +40,10 @@ object Array {
         val array = arguments[0].asArray()
         if (index >= array.size)
             throw IllegalArgumentException("index $index out of bounds for array length ${array.size}")
+        if (arguments[2]::class != (arguments[0] as Value.Array).type)
+            throw IllegalArgumentException("value must mach array type")
         array[index] = arguments[2]
-        r.stack.push(Value.Array(array))
+        r.stack.push(Value.Array(array, (arguments[0] as Value.Array).type))
     }
 
     fun map(r : Runtime) {
@@ -49,13 +54,19 @@ object Array {
             throw IllegalArgumentException("map needs a compound to map over with")
         val array = arguments[0].asArray()
         val fn = arguments[1].asCompound()
+        var clazz : KClass<out Value>? = null
         val res = array.map {
             r.stack.push(it)
             r.evaluate(fn)
             val v = r.fetchNParams(1, false)[0]
+            if (clazz == null) {
+                clazz = v::class
+            }else if (clazz != v::class){
+                throw IllegalArgumentException("list can only contain one type")
+            }
             v
         }
-        r.stack.push(Value.Array(res.toMutableList()))
+        r.stack.push(Value.Array(res.toMutableList(), clazz ?: (arguments[0] as Value.Array).type))
     }
 
     fun forEach(r : Runtime) {
@@ -92,7 +103,7 @@ object Array {
             val ret = r.fetchNParams(1, false, Value.Bool::class)
             ret[0].asBoolean()
         }
-        r.stack.push(Value.Array(res.toMutableList()))
+        r.stack.push(Value.Array(res.toMutableList(), (arguments[0] as Value.Array).type))
     }
 
 }

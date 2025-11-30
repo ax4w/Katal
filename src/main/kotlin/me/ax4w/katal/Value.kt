@@ -1,5 +1,7 @@
 package me.ax4w.katal
 
+import kotlin.reflect.KClass
+
 sealed class Value {
 
     data class Num(val value: Double) : Value()
@@ -16,7 +18,13 @@ sealed class Value {
 
     object Nothing : Value()
 
-    data class Array(val value : MutableList<Value>) : Value()
+    data class Array(val value : MutableList<Value>, val type : KClass<out Value>) : Value() {
+        fun toStr() : String {
+           return value.map { it.asRune() }.joinToString("")
+        }
+    }
+
+    data class Rune(val value: Char) : Value()
 
     fun asBoolean(): Boolean {
         return (this as? Bool)?.value ?: throw IllegalStateException("Value is not a Boolean: $this")
@@ -46,6 +54,10 @@ sealed class Value {
         return (this as? Array)?.value ?: throw IllegalStateException("Value is not a Array: $this")
     }
 
+    fun asRune(): Char {
+        return (this as? Rune)?.value ?: throw IllegalStateException("Value is not a Something: $this")
+    }
+
     fun toDisplay(): String = when (this) {
         is Num -> value.toString()
         is Str -> "\"$value\""
@@ -54,7 +66,13 @@ sealed class Value {
         is Function -> value
         is Something -> "Something($value)"
         is Nothing -> "Nothing"
-        is Array -> "(${value.joinToString(", ")})"
+        is Rune -> "'($value)'"
+        is Array -> {
+            when(this.type) {
+                Rune::class -> "\"${(this.toStr())}\""
+                else -> "(${value.joinToString(", ")})"
+            }
+        }
     }
 
 }

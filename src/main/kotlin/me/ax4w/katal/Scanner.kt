@@ -114,6 +114,17 @@ class Scanner(var input: String) {
         return sb.toString()
     }
 
+    private fun isRune() = input[pos] == '\''
+
+    private fun fetchRune(): String {
+        pos++
+        val c = input[pos]
+        pos++
+        if (input[pos] != '\'') throw IllegalStatementException("Rune can only have one character")
+        pos++
+        return c.toString()
+    }
+
     private fun skipSpaces() {
         while (pos < input.length && input[pos].isWhitespace()) pos++
     }
@@ -144,6 +155,11 @@ class Scanner(var input: String) {
                 isFunctionDeclaration() -> {
                     yield(Pair(fetchFunctionDeclaration(), Token.DECLARATION))
                 }
+
+                isRune() -> {
+                    yield(Pair(fetchRune(), Token.RUNE))
+                }
+
             }
             skipSpaces()
 

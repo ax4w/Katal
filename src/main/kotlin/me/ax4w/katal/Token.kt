@@ -12,6 +12,7 @@ enum class Token {
     // Functions
     FUNCTION,
     DECLARATION,
+    RUNE
 
     // Advanced
     //SOMETHING,

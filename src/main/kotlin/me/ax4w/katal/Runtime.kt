@@ -12,7 +12,7 @@ class Runtime() {
     val stack = Stack<Value>()
 
     private val functions = mutableMapOf<String, (Runtime) -> Unit>()
-    private val runtimeFunctions = mutableMapOf<String, Pair<Int,String>>()
+    private val runtimeFunctions = mutableMapOf<String, Pair<Int, String>>()
 
     init {
         loadLibrariesFromPackage("me.ax4w.katal.lib")
@@ -48,7 +48,7 @@ class Runtime() {
             val rtFn = runtimeFunctions[value]
             if (rtFn == null) {
                 println("No function found for $value")
-            }else{
+            } else {
                 if (stack.size < rtFn.first) throw IllegalStatementException("Function $value needs ${rtFn.first} parameters on stack")
                 executeRuntimeFunction(rtFn.second)
             }
@@ -77,11 +77,21 @@ class Runtime() {
                     Token.DECLARATION -> storeDeclaration(value)
                     else -> {
                         when (tok) {
+                            Token.RUNE -> stack.push(Value.Rune(value[0]))
                             Token.NUMBER -> stack.push(Value.Num(value.toDouble()))
-                            Token.STRING -> stack.push(Value.Str(value))
+                            Token.STRING -> {
+                                stack.push(
+                                    Value.Array(
+                                        value.toCharArray().map { Value.Rune(it) }.toMutableList(),
+                                        Value.Rune::class
+                                    )
+                                )
+                            }
+
                             Token.BOOLEAN -> stack.push(Value.Bool(value.toBoolean()))
                             Token.COMPOUND -> stack.push(Value.Compound(value))
-                            else -> {/*unreachable*/}
+                            else -> {/*unreachable*/
+                            }
                         }
                     }
                 }
@@ -92,7 +102,7 @@ class Runtime() {
         }
     }
 
-    fun fetchNParams(amount: Int, evalCompound : Boolean = false, vararg types: KClass<out Value>) : List<Value> {
+    fun fetchNParams(amount: Int, evalCompound: Boolean = false, vararg types: KClass<out Value>): List<Value> {
         val params = mutableListOf<Value>()
         for (i in 1..amount) {
             if (stack.isEmpty()) throw IllegalStateException("Not enough arguments")
